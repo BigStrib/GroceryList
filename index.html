@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Grocery List</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="summary-row">
+                <div class="summary-card summary-total">
+                    <span class="summary-label">Total</span>
+                    <span class="summary-value" id="totalValue">$0.00</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Items</span>
+                    <span class="summary-value" id="itemCount">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Average</span>
+                    <span class="summary-value" id="avgValue">$0.00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Add Item Form -->
+        <section class="add-section">
+            <form id="itemForm" autocomplete="off">
+                <div class="form-row">
+                    <div class="form-field form-field-name">
+                        <input type="text" id="itemName" placeholder="Item name" required maxlength="60">
+                    </div>
+                    <div class="form-field form-field-price">
+                        <span class="price-prefix">$</span>
+                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                    <button type="submit" class="btn-add" id="addBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Toolbar -->
+        <section class="toolbar" id="toolbar">
+            <div class="toolbar-left">
+                <button class="chip active" id="sortHighLow" data-sort="highToLow">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                    Highest
+                </button>
+                <button class="chip" id="sortLowHigh" data-sort="lowToHigh">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    Lowest
+                </button>
+                <button class="chip" id="sortAlpha" data-sort="alpha">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+                    A–Z
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn-icon btn-search-toggle" id="searchToggle" title="Search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
+                <button class="btn-icon btn-clear-all" id="clearAllBtn" title="Clear all items">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                        <path d="M10 11v6"/>
+                        <path d="M14 11v6"/>
+                        <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Search -->
+        <div class="search-wrap" id="searchWrap">
+            <div class="search-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Search items…">
+                <button class="btn-clear-search" id="clearSearch" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Items List -->
+        <section class="list-section">
+            <div id="itemsList" class="items-list"></div>
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 5H2v7l6.29 6.29a1 1 0 001.42 0l5.58-5.58a1 1 0 000-1.42L9 5z"/>
+                        <circle cx="6" cy="9" r="1" fill="currentColor"/>
+                    </svg>
+                </div>
+                <p class="empty-title">No items yet</p>
+                <p class="empty-sub">Add your first item above to get started.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-backdrop" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon modal-icon-danger">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                </svg>
+            </div>
+            <h3>Delete Item</h3>
+            <p>Are you sure you want to delete</p>
+            <p class="modal-highlight" id="modalItemName">"Item"</p>
+            <p class="modal-price" id="modalItemPrice">$0.00</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All Modal -->
+    <div class="modal-backdrop" id="clearModal">
+        <div class="modal">
+            <div class="modal-icon modal-icon-warning">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h3>Clear All Items</h3>
+            <p>This will permanently remove all <strong id="clearCount">0</strong> items from your list.</p>
+            <p class="modal-warning">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelClear">Cancel</button>
+                <button class="btn-danger" id="confirmClear">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-body">
+            <svg class="toast-icon toast-icon-success" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <svg class="toast-icon toast-icon-error" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <span id="toastMsg">Done</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
