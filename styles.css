@@ -63,10 +63,10 @@ body {
     z-index: 50;
 }
 
-/* Summary */
+/* Change this rule */
 .summary-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
 }
 
@@ -780,7 +780,6 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @media (max-width: 360px) {
     .summary-row { grid-template-columns: 1fr 1fr; }
-    .summary-card:nth-child(3) { grid-column: span 2; }
     .form-row { flex-wrap: wrap; }
     .form-field-name { flex: 1 1 100%; }
     .form-field-price { flex: 1; }

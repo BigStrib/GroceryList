@@ -17,7 +17,6 @@
     const emptyEl = $('#emptyState');
     const itemCountEl = $('#itemCount');
     const totalEl = $('#totalValue');
-    const avgEl = $('#avgValue');
 
     const sortBtns = {
         highToLow: $('#sortHighLow'),
@@ -116,15 +115,15 @@
 
         items.push({
             id: uid(),
-            name,
-            price,
+            name: name,
+            price: price
         });
 
         save();
         render();
         form.reset();
         nameInput.focus();
-        toast(`Added "${name}"`);
+        toast('Added "' + name + '"');
     }
 
     function setSort(mode) {
@@ -137,28 +136,28 @@
     }
 
     function sorted() {
-        const copy = [...items];
-        if (sortMode === 'highToLow') copy.sort((a, b) => b.price - a.price);
-        else if (sortMode === 'lowToHigh') copy.sort((a, b) => a.price - b.price);
-        else copy.sort((a, b) => a.name.localeCompare(b.name));
+        var copy = items.slice();
+        if (sortMode === 'highToLow') copy.sort(function(a, b) { return b.price - a.price; });
+        else if (sortMode === 'lowToHigh') copy.sort(function(a, b) { return a.price - b.price; });
+        else copy.sort(function(a, b) { return a.name.localeCompare(b.name); });
         return copy;
     }
 
     function toggleSearch() {
-        const open = searchWrap.classList.toggle('open');
+        var open = searchWrap.classList.toggle('open');
         searchToggle.classList.toggle('active', open);
-        if (open) setTimeout(() => searchInput.focus(), 250);
+        if (open) setTimeout(function() { searchInput.focus(); }, 250);
         else { searchInput.value = ''; render(); }
     }
 
     function filtered(list) {
-        const q = searchInput.value.toLowerCase().trim();
+        var q = searchInput.value.toLowerCase().trim();
         if (!q) return list;
-        return list.filter((i) => i.name.toLowerCase().includes(q));
+        return list.filter(function(i) { return i.name.toLowerCase().indexOf(q) !== -1; });
     }
 
     function render() {
-        const all = filtered(sorted());
+        var all = filtered(sorted());
 
         listEl.innerHTML = '';
 
@@ -170,9 +169,14 @@
             toolbar.style.display = '';
 
             if (all.length === 0) {
-                listEl.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:0.85rem;">No results found</div>';
+                var noResults = document.createElement('div');
+                noResults.style.cssText = 'padding:32px;text-align:center;color:var(--text-muted);font-size:0.85rem;';
+                noResults.textContent = 'No results found';
+                listEl.appendChild(noResults);
             } else {
-                all.forEach((item, i) => listEl.appendChild(createRow(item, i)));
+                for (var i = 0; i < all.length; i++) {
+                    listEl.appendChild(createRow(all[i], i));
+                }
             }
         }
 
@@ -180,44 +184,42 @@
     }
 
     function createRow(item, index) {
-        const row = document.createElement('div');
+        var row = document.createElement('div');
         row.className = 'item-row';
-        row.style.animationDelay = `${index * 0.03}s`;
+        row.style.animationDelay = (index * 0.03) + 's';
 
-        // Edit button
-        const editBtn = document.createElement('button');
+        var editBtn = document.createElement('button');
         editBtn.className = 'item-edit';
         editBtn.title = 'Edit';
-        editBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
-        editBtn.addEventListener('click', (e) => {
+        editBtn.setAttribute('data-id', item.id);
+        editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+        editBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             openEditModal(item.id);
         });
 
-        // Details
-        const details = document.createElement('div');
+        var details = document.createElement('div');
         details.className = 'item-details';
 
-        const nameEl = document.createElement('div');
+        var nameEl = document.createElement('div');
         nameEl.className = 'item-name';
         nameEl.textContent = item.name;
         nameEl.title = item.name;
         details.appendChild(nameEl);
 
-        // Price
-        const priceEl = document.createElement('div');
+        var priceEl = document.createElement('div');
         priceEl.className = 'item-price';
         priceEl.textContent = '$' + item.price.toFixed(2);
 
-        // Delete button
-        const delBtn = document.createElement('button');
+        var delBtn = document.createElement('button');
         delBtn.className = 'item-delete';
         delBtn.title = 'Delete';
-        delBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-        delBtn.addEventListener('click', (e) => {
+        delBtn.setAttribute('data-id', item.id);
+        delBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        delBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             deleteTargetId = item.id;
-            modalItemName.textContent = `"${item.name}"`;
+            modalItemName.textContent = '"' + item.name + '"';
             modalItemPrice.textContent = '$' + item.price.toFixed(2);
             openModal(deleteModal);
         });
@@ -230,60 +232,67 @@
         return row;
     }
 
-    // ---- Edit ----
     function openEditModal(id) {
-        const item = items.find((i) => i.id === id);
+        var item = null;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].id === id) { item = items[i]; break; }
+        }
         if (!item) return;
         editTargetId = id;
         editNameInput.value = item.name;
         editPriceInput.value = item.price;
         openModal(editModal);
-        setTimeout(() => editNameInput.focus(), 300);
+        setTimeout(function() { editNameInput.focus(); }, 300);
     }
 
     function onConfirmEdit(e) {
         e.preventDefault();
         if (!editTargetId) return;
 
-        const name = editNameInput.value.trim();
-        const price = parseFloat(editPriceInput.value);
+        var name = editNameInput.value.trim();
+        var price = parseFloat(editPriceInput.value);
 
         if (!name) { toast('Enter an item name', true); editNameInput.focus(); return; }
         if (isNaN(price) || price < 0) { toast('Enter a valid price', true); editPriceInput.focus(); return; }
 
-        const item = items.find((i) => i.id === editTargetId);
-        if (item) {
-            item.name = name;
-            item.price = price;
-            save();
-            render();
-            toast(`"${name}" updated`);
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].id === editTargetId) {
+                items[i].name = name;
+                items[i].price = price;
+                break;
+            }
         }
 
+        save();
+        render();
+        toast('"' + name + '" updated');
         editTargetId = null;
         closeModal(editModal);
     }
 
-    // ---- Delete ----
     function onConfirmDelete() {
         if (!deleteTargetId) return;
-        const item = items.find((i) => i.id === deleteTargetId);
-        const name = item ? item.name : 'Item';
+        var item = null;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].id === deleteTargetId) { item = items[i]; break; }
+        }
+        var name = item ? item.name : 'Item';
 
-        const rows = listEl.querySelectorAll('.item-row');
-        rows.forEach((row) => {
-            if (row.querySelector('.item-name')?.textContent === item?.name) {
-                row.classList.add('removing');
+        var rows = listEl.querySelectorAll('.item-row');
+        for (var r = 0; r < rows.length; r++) {
+            var btn = rows[r].querySelector('.item-delete');
+            if (btn && btn.getAttribute('data-id') === deleteTargetId) {
+                rows[r].classList.add('removing');
             }
-        });
+        }
 
-        setTimeout(() => {
-            items = items.filter((i) => i.id !== deleteTargetId);
+        setTimeout(function() {
+            items = items.filter(function(i) { return i.id !== deleteTargetId; });
             deleteTargetId = null;
             save();
             closeModal(deleteModal);
             render();
-            toast(`"${name}" deleted`);
+            toast('"' + name + '" deleted');
         }, 280);
     }
 
@@ -296,13 +305,14 @@
     }
 
     function updateStats() {
-        const count = items.length;
-        const total = items.reduce((s, i) => s + i.price, 0);
-        const avg = count > 0 ? total / count : 0;
+        var count = items.length;
+        var total = 0;
+        for (var i = 0; i < items.length; i++) {
+            total += items[i].price;
+        }
 
         itemCountEl.textContent = count;
         totalEl.textContent = '$' + total.toFixed(2);
-        avgEl.textContent = '$' + avg.toFixed(2);
     }
 
     function openModal(el) {
@@ -315,32 +325,32 @@
         document.body.style.overflow = '';
     }
 
-    function toast(msg, isError = false) {
+    function toast(msg, isError) {
         clearTimeout(toastTimer);
         toastEl.classList.remove('show', 'error');
         toastMsg.textContent = msg;
         if (isError) toastEl.classList.add('error');
         void toastEl.offsetHeight;
         toastEl.classList.add('show');
-        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+        toastTimer = setTimeout(function() { toastEl.classList.remove('show'); }, 2400);
     }
 
     function save() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, sortMode }));
-        } catch (e) { /* silent */ }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: items, sortMode: sortMode }));
+        } catch (e) {}
     }
 
     function load() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            var raw = localStorage.getItem(STORAGE_KEY);
             if (raw) {
-                const data = JSON.parse(raw);
+                var data = JSON.parse(raw);
                 items = data.items || [];
                 sortMode = data.sortMode || 'highToLow';
-                Object.keys(sortBtns).forEach((k) =>
-                    sortBtns[k].classList.toggle('active', k === sortMode)
-                );
+                Object.keys(sortBtns).forEach(function(k) {
+                    sortBtns[k].classList.toggle('active', k === sortMode);
+                });
             }
         } catch (e) {
             items = [];
