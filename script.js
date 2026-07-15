@@ -103,6 +103,15 @@
                 closeModal(editModal);
             }
         });
+
+        // ── NEW: clicking outside the list deactivates all rows ──
+        document.addEventListener('click', function (e) {
+            if (!listEl.contains(e.target)) {
+                var allRows = listEl.querySelectorAll('.item-row');
+                allRows.forEach(function (r) { r.classList.remove('active'); });
+            }
+        });
+        // ─────────────────────────────────────────────────────────
     }
 
     function onAdd(e) {
@@ -187,6 +196,22 @@
         var row = document.createElement('div');
         row.className = 'item-row';
         row.style.animationDelay = (index * 0.03) + 's';
+
+        // ── NEW: tap/click row to reveal icons ──
+        row.addEventListener('click', function () {
+            var isAlreadyActive = row.classList.contains('active');
+
+            // Deactivate all rows first
+            var allRows = listEl.querySelectorAll('.item-row');
+            allRows.forEach(function (r) { r.classList.remove('active'); });
+
+            // If it wasn't active, activate it
+            // If it was already active, leave it deactivated (acts as a toggle off)
+            if (!isAlreadyActive) {
+                row.classList.add('active');
+            }
+        });
+        // ───────────────────────────────────────
 
         var editBtn = document.createElement('button');
         editBtn.className = 'item-edit';

@@ -63,7 +63,6 @@ body {
     z-index: 50;
 }
 
-/* Change this rule */
 .summary-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -381,6 +380,7 @@ input[type="number"] { -moz-appearance: textfield; }
     background: var(--bg-raised);
     transition: background var(--transition);
     animation: fadeUp 0.3s ease both;
+    cursor: pointer;
 }
 
 @keyframes fadeUp {
@@ -391,6 +391,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .item-row:hover { background: var(--bg-hover); }
 .item-row:active { background: #2a2a2a; }
 
+/* Hidden by default */
 .item-edit {
     width: 30px;
     height: 30px;
@@ -404,6 +405,8 @@ input[type="number"] { -moz-appearance: textfield; }
     cursor: pointer;
     flex-shrink: 0;
     transition: all var(--transition);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .item-edit:hover {
@@ -439,6 +442,7 @@ input[type="number"] { -moz-appearance: textfield; }
     font-variant-numeric: tabular-nums;
 }
 
+/* Hidden by default */
 .item-delete {
     width: 30px;
     height: 30px;
@@ -452,6 +456,8 @@ input[type="number"] { -moz-appearance: textfield; }
     cursor: pointer;
     flex-shrink: 0;
     transition: all var(--transition);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .item-delete:hover {
@@ -460,6 +466,20 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 .item-delete:active { transform: scale(0.88); }
+
+/* ── Reveal both icons when row is active/clicked ── */
+.item-row.active .item-edit,
+.item-row.active .item-delete {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ── Highlight the selected row ── */
+.item-row.active {
+    background: var(--bg-hover);
+    border-left: 3px solid var(--red);
+    padding-left: 13px; /* Keeps layout aligned with 3px border */
+}
 
 .item-row.removing {
     animation: slideOut 0.3s ease forwards;
