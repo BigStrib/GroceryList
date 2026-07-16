@@ -1,0 +1,18 @@
+{
+    "name": "GroceryList",
+    "short_name": "GroceryList",
+    "description": "Calculate Groceries",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "images/icon.png",
+            "sizes": "any",
+            "type": "image/png+xml"
+        }
+    ]
+}
